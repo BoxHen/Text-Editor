@@ -68,7 +68,7 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         setTitle(currentFile);
         setVisible(true);
     }
-    //save and save as are initally grayed out until text is entered in the JTextArea
+    //save and save as are initially grayed out until text is entered in the JTextArea
     private KeyListener k1 = new KeyAdapter() {
         public void keyPressed(KeyEvent e) {
             changed = true;
@@ -76,6 +76,81 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
             SaveAs.setEnabled(true);
         }
     };
+    //action1
+    Action Open = new AbstractAction("Open", new ImageIcon("open.gif")) {
+        public void actionPerformed(ActionEvent e) {
+            saveOld();
+            if(dialog.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
+                readInFile(dialog.getSelectedFile().getAbsolutePath());
+            }
+            SaveAs.setEnabled(true);
+        }
+    };
 
+    Action Save = new AbstractAction("Save", new ImageIcon("save.gif")) {
+        public void actionPerformed(ActionEvent e) {
+            if(!currentFile.equals("Untitled"))
+                saveFile(currentFile);
+            else
+                saveFileAs();
+        }
+    };
+
+    Action SaveAs = new AbstractAction("Save as...") {
+        public void actionPerformed(ActionEvent e) {
+            saveFileAs();
+        }
+    };
+    Action Quit = new AbstractAction("Quit") {
+        public void actionPerformed(ActionEvent e) {
+            saveOld();
+            System.exit(0);
+        }
+    };
+    ActionMap m = area.getActionMap();
+    Action Cut = m.get(DefaultEditorKit.cutAction);
+    Action Copy = m.get(DefaultEditorKit.copyAction);
+    Action Paste = m.get(DefaultEditorKit.pasteAction);
+
+    private void saveFileAs() {
+        if(dialog.showSaveDialog(null)==JFileChooser.APPROVE_OPTION)
+            saveFile(dialog.getSelectedFile().getAbsolutePath());
+    }
+
+    private void saveOld() {
+        if(changed) {
+            if(JOptionPane.showConfirmDialog(this, "Would you like to save "+ currentFile +" ?","Save",JOptionPane.YES_NO_OPTION)== JOptionPane.YES_OPTION)
+                saveFile(currentFile);
+        }
+    }
+
+    private void readInFile(String fileName) {
+        try {
+            FileReader r = new FileReader(fileName);
+            area.read(r,null);
+            r.close();
+            currentFile = fileName;
+            setTitle(currentFile);
+            changed = false;
+        }
+        catch(IOException e) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this,"Editor can't find the file called "+fileName);
+        }
+    }
+
+    private void saveFile(String fileName) {
+        try {
+            FileWriter w = new FileWriter(fileName);
+            area.write(w);
+            w.close();
+            currentFile = fileName;
+            setTitle(currentFile);
+            changed = false;
+            Save.setEnabled(false);
+        }
+        catch(IOException e) {
+        }
+    }
 }
 
