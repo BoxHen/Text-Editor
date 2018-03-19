@@ -14,9 +14,9 @@ public class BasicSwing extends JFrame {
 
 
 
-    public static void main(String[] args){
-        new BasicSwing();
-    }
+//    public static void main(String[] args){
+//        new BasicSwing();
+//    }
 
     public BasicSwing(){
         super("Basic Swing App"); // calls the super class constructor JFrame
@@ -35,3 +35,5 @@ public class BasicSwing extends JFrame {
         setVisible(true);
     }
 }
+
+
