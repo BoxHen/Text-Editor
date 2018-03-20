@@ -15,7 +15,7 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
     // A Frame is a top-level window with a title and a border.
 /*================================================Base variables======================================================*/
 /*-------------------- part of javax.swing-------------------------*/
-    private JTextArea area = new JTextArea(20,120); // JTextArea will be the area where you can write documents
+    private JTextArea area = new JTextArea(20, 120); // JTextArea will be the area where you can write documents
     // The two arguments to the JTextArea constructor are the number of rows and columns, respectively, that the text area should display
     private JFileChooser dialog = new JFileChooser(System.getProperty("user.dir")); // JFileChooser provides a simple mechanism for the user to choose a file.
     // reference: https://docs.oracle.com/javase/tutorial/uiswing/components/filechooser.html
@@ -36,28 +36,39 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         JMB.add(file); // adds tabs to the bar
         JMB.add(edit);
 
-        /*file.add(New);*/ file.add(Open); file.add(Save); file.add(Quit); file.add(SaveAs); // refer below
+        /*file.add(New);*/
+        file.add(Open);
+        file.add(Save);
+        file.add(Quit);
+        file.add(SaveAs); // refer below
         file.addSeparator(); // creates a line in file dropdown after the SaveAs
 
-        for(int i=0; i<4; i++) {
+        for (int i = 0; i < 4; i++) {
             file.getItem(i).setIcon(null); //Returns the item affected by the event.
         }
-        edit.add(Cut);edit.add(Copy);edit.add(Paste);
+        edit.add(Cut);
+        edit.add(Copy);
+        edit.add(Paste);
 
         edit.getItem(0).setText("Cut out"); // ????
         edit.getItem(1).setText("Copy"); // setText is used to change the  display text  of a component like label, text field or button  at run time
         edit.getItem(2).setText("Paste");
 
         JToolBar tool = new JToolBar(); // Creates a new tool bar; orientation defaults to HORIZONTAL.
-        add(tool,BorderLayout.NORTH); // add toolbar to the frame and sets it up top
-        /*tool.add(New);*/tool.add(Open);tool.add(Save);
+        add(tool, BorderLayout.NORTH); // add toolbar to the frame and sets it up top
+        /*tool.add(New);*/
+        tool.add(Open);
+        tool.add(Save);
         tool.addSeparator();
 
-        JButton cut = tool.add(Cut), cop = tool.add(Copy),pas = tool.add(Paste);
+        JButton cut = tool.add(Cut), cop = tool.add(Copy), pas = tool.add(Paste);
 
-        /*cut.setText("cut");*/ cut.setIcon(new ImageIcon("cut.png")); // how do i ref the resources folder???????
-        cop.setText("copy"); cop.setIcon(new ImageIcon("copy.png"));
-        pas.setText("paste"); pas.setIcon(new ImageIcon("paste.png"));
+        /*cut.setText("cut");*/
+        cut.setIcon(new ImageIcon("cut.png")); // how do i ref the resources folder???????
+        cop.setText("copy");
+        cop.setIcon(new ImageIcon("copy.png"));
+        pas.setText("paste");
+        pas.setIcon(new ImageIcon("paste.png"));
 
         Save.setEnabled(false);
         SaveAs.setEnabled(false);
@@ -68,6 +79,7 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         setTitle(currentFile);
         setVisible(true);
     }
+
     //save and save as are initially grayed out until text is entered in the JTextArea
     private KeyListener k1 = new KeyAdapter() {
         public void keyPressed(KeyEvent e) {
@@ -77,80 +89,27 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         }
     };
     //action1
-    Action Open = new AbstractAction("Open", new ImageIcon("open.gif")) {
+    Action Open = new AbstractAction("Open") {
+        @Override
         public void actionPerformed(ActionEvent e) {
-            saveOld();
-            if(dialog.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
+            if (dialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 readInFile(dialog.getSelectedFile().getAbsolutePath());
             }
             SaveAs.setEnabled(true);
         }
     };
 
-    Action Save = new AbstractAction("Save", new ImageIcon("save.gif")) {
+    Action Save = new AbstractAction("Save") {
+        @Override
         public void actionPerformed(ActionEvent e) {
-            if(!currentFile.equals("Untitled"))
+            if (!currentFile.equals("Untitled"))
                 saveFile(currentFile);
             else
                 saveFileAs();
         }
     };
 
-    Action SaveAs = new AbstractAction("Save as...") {
-        public void actionPerformed(ActionEvent e) {
-            saveFileAs();
-        }
-    };
-    Action Quit = new AbstractAction("Quit") {
-        public void actionPerformed(ActionEvent e) {
-            saveOld();
-            System.exit(0);
-        }
-    };
-    ActionMap m = area.getActionMap();
-    Action Cut = m.get(DefaultEditorKit.cutAction);
-    Action Copy = m.get(DefaultEditorKit.copyAction);
-    Action Paste = m.get(DefaultEditorKit.pasteAction);
-
-    private void saveFileAs() {
-        if(dialog.showSaveDialog(null)==JFileChooser.APPROVE_OPTION)
-            saveFile(dialog.getSelectedFile().getAbsolutePath());
-    }
-
-    private void saveOld() {
-        if(changed) {
-            if(JOptionPane.showConfirmDialog(this, "Would you like to save "+ currentFile +" ?","Save",JOptionPane.YES_NO_OPTION)== JOptionPane.YES_OPTION)
-                saveFile(currentFile);
-        }
-    }
-
-    private void readInFile(String fileName) {
-        try {
-            FileReader r = new FileReader(fileName);
-            area.read(r,null);
-            r.close();
-            currentFile = fileName;
-            setTitle(currentFile);
-            changed = false;
-        }
-        catch(IOException e) {
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(this,"Editor can't find the file called "+fileName);
-        }
-    }
-
-    private void saveFile(String fileName) {
-        try {
-            FileWriter w = new FileWriter(fileName);
-            area.write(w);
-            w.close();
-            currentFile = fileName;
-            setTitle(currentFile);
-            changed = false;
-            Save.setEnabled(false);
-        }
-        catch(IOException e) {
-        }
-    }
 }
+
+
 
