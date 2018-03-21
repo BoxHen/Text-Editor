@@ -22,6 +22,7 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
 /*-----------------------------------------------------------------*/
     private String currentFile = "Untitled";
     private boolean changed = false;
+    private boolean stay = false;
 /*====================================================================================================================*/
 
     public TextEditor() {
@@ -89,11 +90,11 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         }
     };
     //action1
-    Action Open = new AbstractAction("Open") {
+    Action Open = new AbstractAction("Open") { // opens "open file" dialog
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (dialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                readInFile(dialog.getSelectedFile().getAbsolutePath());
+            if (dialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // showopendialog with null passed to parent means pop up is centered on screen
+                readFile(dialog.getSelectedFile().getAbsolutePath()); //chooses the selected file and Returns the absolute pathname string of it
             }
             SaveAs.setEnabled(true);
         }
@@ -105,10 +106,50 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
             if (!currentFile.equals("Untitled"))
                 saveFile(currentFile);
             else
-                saveFileAs();
+                saveAs();
         }
     };
 
+
+    Action SaveAs = new AbstractAction("Save As") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            saveAs();
+        }
+    };
+
+
+    private void saveAs() {
+        if (dialog.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)//opens save dialog at center of yur screen
+            saveFile(dialog.getSelectedFile().getAbsolutePath());
+    }
+
+    private void readFile(String fileName) {
+        try {
+            FileReader r = new FileReader(fileName);
+            area.read(r, null); // reads stream from r, no description so null
+            r.close();
+            currentFile = fileName;
+            setTitle(currentFile); // new opened file changed to correct name
+            changed = false;
+        } catch (IOException e) {
+            Toolkit.getDefaultToolkit().beep(); // BEEPS if actions like clicking out of box is done
+            JOptionPane.showMessageDialog(this, "Editor can't find the file called " + fileName); // this refers to JFrame
+        }
+    }
+
+    private void saveFile(String fileName) {
+        try {
+            FileWriter w = new FileWriter(fileName);
+            area.write(w);
+            w.close();
+            currentFile = fileName;
+            setTitle(currentFile);
+            changed = false;
+            Save.setEnabled(false);
+        } catch (IOException e) {
+        }
+    }
 }
 
 
