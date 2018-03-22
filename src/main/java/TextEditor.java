@@ -21,12 +21,13 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
     // reference: https://docs.oracle.com/javase/tutorial/uiswing/components/filechooser.html
 /*-----------------------------------------------------------------*/
     private String currentFile = "Untitled";
-    private boolean changed = false;
-    private boolean stay = false;
-/*====================================================================================================================*/
+    private boolean changed = false;// checks if file has been "changed"
+    private boolean stayInEditor = false;
+    //private
 
+/*================================================Constructor=========================================================*/
     public TextEditor() {
-        area.setFont(new Font("Monospaced", Font.PLAIN, 12)); //setFont is part of JTextArea
+        area.setFont(new Font("Monospaced", Font.PLAIN, 15)); //setFont is part of JTextArea
         JScrollPane areaScrollPane = new JScrollPane(area, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // sets up scroll bar policy
         add(areaScrollPane, BorderLayout.CENTER); // adds the scroll pane to the container
 
@@ -60,16 +61,18 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         /*tool.add(New);*/
         tool.add(Open);
         tool.add(Save);
+        tool.add(Bold);
         tool.addSeparator();
 
-        JButton cut = tool.add(Cut), cop = tool.add(Copy), pas = tool.add(Paste);
+        JButton cut = tool.add(Cut), copy = tool.add(Copy), paste = tool.add(Paste), bold = tool.add(Bold);
 
-        /*cut.setText("cut");*/
+        cut.setText("cut");
         cut.setIcon(new ImageIcon("cut.png")); // how do i ref the resources folder???????
-        cop.setText("copy");
-        cop.setIcon(new ImageIcon("copy.png"));
-        pas.setText("paste");
-        pas.setIcon(new ImageIcon("paste.png"));
+        copy.setText("copy");
+        copy.setIcon(new ImageIcon("copy.png"));
+        paste.setText("paste");
+        paste.setIcon(new ImageIcon("paste.png"));
+        bold.setText("B");
 
         Save.setEnabled(false);
         SaveAs.setEnabled(false);
@@ -80,7 +83,7 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         setTitle(currentFile);
         setVisible(true);
     }
-
+/*====================================================================================================================*/
     //save and save as are initially grayed out until text is entered in the JTextArea
     private KeyListener k1 = new KeyAdapter() {
         public void keyPressed(KeyEvent e) {
@@ -89,10 +92,9 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
             SaveAs.setEnabled(true);
         }
     };
-    //action1
-    Action Open = new AbstractAction("Open") { // opens "open file" dialog
-        @Override
-        public void actionPerformed(ActionEvent e) {
+
+    Action Open = new AbstractAction("Open"){ // reference: https://docs.oracle.com/javase/tutorial/uiswing/misc/action.html
+        public void actionPerformed(ActionEvent e){
             if (dialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // showopendialog with null passed to parent means pop up is centered on screen
                 readFile(dialog.getSelectedFile().getAbsolutePath()); //chooses the selected file and Returns the absolute pathname string of it
             }
@@ -118,12 +120,50 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         }
     };
 
+    Action Quit = new AbstractAction("Quit") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            saveOld();
+            if (!stayInEditor) { // stay initialized to false --!false = true
+                System.exit(0);
+            }
+        }
+    };
+    Action Bold = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            area.setFont(new Font("Monospaced", Font.BOLD, 15));
+        }
+    };
+
+    ActionMap m = area.getActionMap();
+    Action Cut = m.get(DefaultEditorKit.cutAction); // simply does the action from DefaultEditrKit
+    Action Copy = m.get(DefaultEditorKit.copyAction);
+    Action Paste = m.get(DefaultEditorKit.pasteAction);
+    Action Bold = m.get(DefaultHighlighter.)
 
     private void saveAs() {
-        if (dialog.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)//opens save dialog at center of yur screen
+        if (dialog.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {//opens save dialog at center of yur screen
             saveFile(dialog.getSelectedFile().getAbsolutePath());
+        }
+        else{
+            stayInEditor = true;
+        }
     }
 
+    private void saveOld() {
+        if (changed) {
+            int temp = (JOptionPane.showConfirmDialog(this, "Would you like to save " + currentFile + " ?", "Save", JOptionPane.YES_NO_CANCEL_OPTION));
+            if (temp == (JOptionPane.YES_OPTION))
+                saveAs();
+            else if(temp == JOptionPane.CANCEL_OPTION){
+                stayInEditor = true;
+            }
+            else if(temp == JOptionPane.NO_OPTION){
+                stayInEditor = false;
+            }
+        }
+    }
     private void readFile(String fileName) {
         try {
             FileReader r = new FileReader(fileName);
