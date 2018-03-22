@@ -58,13 +58,12 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
 
         JToolBar tool = new JToolBar(); // Creates a new tool bar; orientation defaults to HORIZONTAL.
         add(tool, BorderLayout.NORTH); // add toolbar to the frame and sets it up top
-        /*tool.add(New);*/
+        tool.add(New);
         tool.add(Open);
         tool.add(Save);
-        tool.add(Bold);
         tool.addSeparator();
 
-        JButton cut = tool.add(Cut), copy = tool.add(Copy), paste = tool.add(Paste), bold = tool.add(Bold);
+        JButton cut = tool.add(Cut), copy = tool.add(Copy), paste = tool.add(Paste);
 
         cut.setText("cut");
         cut.setIcon(new ImageIcon("cut.png")); // how do i ref the resources folder???????
@@ -72,7 +71,6 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         copy.setIcon(new ImageIcon("copy.png"));
         paste.setText("paste");
         paste.setIcon(new ImageIcon("paste.png"));
-        bold.setText("B");
 
         Save.setEnabled(false);
         SaveAs.setEnabled(false);
@@ -90,6 +88,12 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
             changed = true;
             Save.setEnabled(true);
             SaveAs.setEnabled(true);
+        }
+    };
+    Action New = new AbstractAction("New") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
         }
     };
 
@@ -112,7 +116,6 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         }
     };
 
-
     Action SaveAs = new AbstractAction("Save As") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -129,18 +132,11 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
             }
         }
     };
-    Action Bold = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            area.setFont(new Font("Monospaced", Font.BOLD, 15));
-        }
-    };
 
     ActionMap m = area.getActionMap();
     Action Cut = m.get(DefaultEditorKit.cutAction); // simply does the action from DefaultEditrKit
     Action Copy = m.get(DefaultEditorKit.copyAction);
     Action Paste = m.get(DefaultEditorKit.pasteAction);
-    Action Bold = m.get(DefaultHighlighter.)
 
     private void saveAs() {
         if (dialog.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {//opens save dialog at center of yur screen
@@ -190,6 +186,7 @@ public class TextEditor extends JFrame { // JFrame is from Package javax.swing a
         } catch (IOException e) {
         }
     }
+
 }
 
 
